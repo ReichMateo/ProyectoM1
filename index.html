@@ -26,6 +26,14 @@
           </select>
           <p class="hint" id="sizeHint">Elige cuántos colores quieres generar.</p>
         </fieldset>
+        <fieldset>
+          <legend>Formato de color</legend>
+          <label for="colorFormat">Mostrar como</label>
+          <select id="colorFormat" name="colorFormat">
+            <option value="hex">HEX</option>
+            <option value="hsl">HSL</option>
+          </select>
+        </fieldset>
         <button id="generateButton" type="submit">Generar paleta</button>
       </form>
       <div class="status" id="statusMessage" aria-live="polite"></div>

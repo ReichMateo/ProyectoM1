@@ -1,6 +1,8 @@
+
 const paletteSection = document.getElementById('paletteSection');
 const paletteForm = document.getElementById('paletteForm');
 const paletteSize = document.getElementById('paletteSize');
+const colorFormat = document.getElementById('colorFormat');
 const statusMessage = document.getElementById('statusMessage');
 const toast = document.getElementById('toast');
 const STORAGE_KEY = 'randomPaletteAppState';
@@ -95,10 +97,12 @@ function renderPalette(colors) {
     card.style.color = getContrastText(color.hex);
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
-    card.setAttribute('aria-label', `Color ${index + 1}: ${color.hex}. Haz clic para copiar.`);
     card.dataset.hex = color.hex;
     card.dataset.hsl = color.hsl;
     card.dataset.locked = color.locked ? 'true' : 'false';
+
+    const displayValue = colorFormat.value === 'hsl' ? color.hsl : color.hex;
+    card.setAttribute('aria-label', `Color ${index + 1}: ${displayValue}. Haz clic para copiar.`);
 
     const info = document.createElement('div');
     info.className = 'color-card__info';
@@ -107,18 +111,12 @@ function renderPalette(colors) {
     label.className = 'color-card__label';
     label.innerHTML = `<span>Color ${index + 1}</span><button class="lock-button" type="button" aria-label="${color.locked ? 'Desbloquear' : 'Bloquear'} color ${index + 1}">${color.locked ? '🔒' : '🔓'}</button>`;
 
-    const hexText = document.createElement('div');
-    hexText.className = 'color-card__hex';
-    hexText.textContent = color.hex;
-
-    const hslText = document.createElement('div');
-    hslText.textContent = color.hsl;
-    hslText.style.opacity = '0.9';
-    hslText.style.fontSize = '0.92rem';
+    const valueText = document.createElement('div');
+    valueText.className = 'color-card__hex';
+    valueText.textContent = displayValue;
 
     info.appendChild(label);
-    info.appendChild(hexText);
-    info.appendChild(hslText);
+    info.appendChild(valueText);
     card.appendChild(info);
     paletteSection.appendChild(card);
 
@@ -133,8 +131,9 @@ function renderPalette(colors) {
     });
 
     const copyColor = () => {
-      navigator.clipboard.writeText(color.hex).then(() => {
-        showToast(`${color.hex} copiado al portapapeles`);
+      const copyValue = colorFormat.value === 'hsl' ? color.hsl : color.hex;
+      navigator.clipboard.writeText(copyValue).then(() => {
+        showToast(`${copyValue} copiado al portapapeles`);
       }).catch(() => {
         showToast('No se pudo copiar el color');
       });
@@ -172,7 +171,7 @@ function buildPalette(size, previous = []) {
 }
 
 function saveCurrentState(colors) {
-  savePalette({ size: parseInt(paletteSize.value, 10), colors });
+  savePalette({ size: parseInt(paletteSize.value, 10), format: colorFormat.value, colors });
 }
 
 function updateStatus(message) {
@@ -189,18 +188,30 @@ paletteForm.addEventListener('submit', event => {
   updateStatus(`Paleta de ${size} colores generada.`);
 });
 
-window.addEventListener('load', () => {
-  const saved = loadPalette();
-  if (saved && saved.colors?.length) {
-    if ([6, 8, 9].includes(saved.size)) {
-      paletteSize.value = String(saved.size);
+  colorFormat.addEventListener('change', () => {
+    const saved = loadPalette();
+    if (saved && saved.colors?.length) {
+      renderPalette(saved.colors);
+      savePalette({ ...saved, format: colorFormat.value });
+      updateStatus(`Mostrando colores en ${colorFormat.value.toUpperCase()}.`);
     }
-    renderPalette(saved.colors);
-    updateStatus('Paleta restaurada desde localStorage.');
-  } else {
-    const initialPalette = buildPalette(Number(paletteSize.value));
-    renderPalette(initialPalette);
-    saveCurrentState(initialPalette);
-    updateStatus('Paleta inicial generada.');
-  }
-});
+  });
+
+  window.addEventListener('load', () => {
+    const saved = loadPalette();
+    if (saved && saved.colors?.length) {
+      if ([6, 8, 9].includes(saved.size)) {
+        paletteSize.value = String(saved.size);
+      }
+      if (saved.format) {
+        colorFormat.value = saved.format;
+      }
+      renderPalette(saved.colors);
+      updateStatus('Paleta restaurada desde localStorage.');
+    } else {
+      const initialPalette = buildPalette(Number(paletteSize.value));
+      renderPalette(initialPalette);
+      saveCurrentState(initialPalette);
+      updateStatus('Paleta inicial generada.');
+    }
+  });
