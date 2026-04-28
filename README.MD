@@ -18,8 +18,7 @@ Una aplicación web simple e interactiva que permite generar paletas de colores 
 
 ## 🖥️ Demo
 
-> Podés agregar acá el link cuando lo subas a GitHub Pages o similar
-
+> https://reichmateo.github.io/ProyectoM1/
 
 * **index.html** → Estructura de la web
 * **styles.css** → estilos y diseño visual
