@@ -215,4 +215,5 @@ paletteForm.addEventListener('submit', event => {
       updateStatus('Paleta inicial generada.');
     }
   });
+
   
