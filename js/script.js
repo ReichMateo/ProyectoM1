@@ -178,6 +178,13 @@ function updateStatus(message) {
   statusMessage.textContent = message;
 }
 
+function updateSelectedColorCount() {
+  const size = Number(paletteSize.value);
+  updateStatus(`Seleccionado ${size} colores.`);
+}
+
+paletteSize.addEventListener('change', updateSelectedColorCount);
+
 paletteForm.addEventListener('submit', event => {
   event.preventDefault();
   const size = Number(paletteSize.value);
@@ -188,14 +195,14 @@ paletteForm.addEventListener('submit', event => {
   updateStatus(`Paleta de ${size} colores generada.`);
 });
 
-  colorFormat.addEventListener('change', () => {
-    const saved = loadPalette();
-    if (saved && saved.colors?.length) {
-      renderPalette(saved.colors);
-      savePalette({ ...saved, format: colorFormat.value });
-      updateStatus(`Mostrando colores en ${colorFormat.value.toUpperCase()}.`);
-    }
-  });
+colorFormat.addEventListener('change', () => {
+  const saved = loadPalette();
+  if (saved && saved.colors?.length) {
+    renderPalette(saved.colors);
+    savePalette({ ...saved, format: colorFormat.value });
+    updateStatus(`Mostrando colores en ${colorFormat.value.toUpperCase()}.`);
+  }
+});
 
   window.addEventListener('load', () => {
     const saved = loadPalette();
