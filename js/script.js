@@ -118,6 +118,14 @@ function renderPalette(colors) {
     info.appendChild(label);
     info.appendChild(valueText);
     card.appendChild(info);
+    // Añadir animación de entrada con retraso escalonado
+    card.classList.add('color-card--enter');
+    card.style.animationDelay = `${index * 80}ms`;
+    card.addEventListener('animationend', () => {
+      card.classList.remove('color-card--enter');
+      card.style.animationDelay = '';
+    }, { once: true });
+
     paletteSection.appendChild(card);
 
     const lockButton = label.querySelector('.lock-button');
@@ -188,11 +196,19 @@ paletteSize.addEventListener('change', updateSelectedColorCount);
 paletteForm.addEventListener('submit', event => {
   event.preventDefault();
   const size = Number(paletteSize.value);
+  // Marcar que se está generando para evitar acciones repetidas visuales
+  paletteSection.classList.add('is-generating');
   const previous = loadPalette()?.colors || [];
   const newPalette = buildPalette(size, previous);
   renderPalette(newPalette);
   saveCurrentState(newPalette);
   updateStatus(`Paleta de ${size} colores generada.`);
+  // Remover la marca tras completarse las animaciones (duración + stagger)
+  const totalDuration = 360 + size * 80 + 50; // ms
+  clearTimeout(paletteSection._removeTimer);
+  paletteSection._removeTimer = setTimeout(() => {
+    paletteSection.classList.remove('is-generating');
+  }, totalDuration);
 });
 
 colorFormat.addEventListener('change', () => {
