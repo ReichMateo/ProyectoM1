@@ -18,11 +18,11 @@ Una aplicación web simple e interactiva que permite generar paletas de colores 
 
 ## 🖥️ Demo
 
-> https://reichmateo.github.io/ProyectoM1_MateoReich/
+> Abre `index.html` en el navegador para ver la demo actual.
 
 * **index.html** → Estructura de la web
-* **styles.css** → estilos y diseño visual
-* **script.js** → lógica de generación de colores e interacción
+* **css/styles.css** → estilos y diseño visual
+* **js/script.js** → lógica de generación de colores e interacción
 
 ## ⚙️ Cómo funciona
 
